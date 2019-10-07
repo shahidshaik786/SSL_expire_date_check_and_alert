@@ -38,3 +38,8 @@ fi
 done < "$FILE"
 sleep 10800
 done
+#######################################################################################################################################################
+#The content of $HOME/scripts/URL_File is as below
+#Please remove "#" and Headline titles. Each parameter will be read by the difrence of spaces.
+#URL_of_the_web_site_with_https_protocol
+#https://google.com
