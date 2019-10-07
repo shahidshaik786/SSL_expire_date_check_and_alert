@@ -1,0 +1,40 @@
+#!/bin/bash
+
+################Files to be created before starting exicution####################
+# sudo apt-get install alsa alsa-utils						#
+# mkdir -p $HOME/scripts							#
+# touch $HOME/scripts/ssl_url							#
+# Download alert.wav file and copy it into $HOME/scripts directory		#
+#################################################################################
+while true
+do
+year=$(date | awk '{print $6}')
+month=$(date | awk '{print $2}')
+day=$(date | awk '{print $3}')
+touch /tmp/ssl_expire
+FILE="$HOME/scripts/ssl_url"
+while read -r URL; do
+expire_date=$(curl --insecure -v $URL 2>&1 | awk 'BEGIN { cert=0 } /^\* SSL connection/ { cert=1 } /^\*/ { if (cert) print }' | awk '/^*  expire date: /{print $4,$5,$7}')
+echo $expire_date > /tmp/ssl_expire
+ssl_year=$(cat /tmp/ssl_expire | awk '{print $3}')
+ssl_month=$(cat /tmp/ssl_expire | awk '{print $1}')
+ssl_day=$(cat /tmp/ssl_expire | awk '{print $2}')
+echo "-------------------------------------------------------------------------------------------------------------------------------------"
+echo "| Today's Date: $day-$month-$year |Certificate Expire Date:  $ssl_day-$ssl_month-$ssl_year | Web Site URL: $URL"
+if [ $ssl_year -eq $year ]
+then 
+	if [ "$ssl_month" == "$month" ] 
+	then
+		remind_days=3
+		ex_days=1
+		before_expire=$(($day - $remind_days))
+		before_one=$(($day + $ex_days))
+		if [ $ssl_day -gt $before_expire -a $ssl_day -lt $before_one ]
+		then
+			echo "Dear Admin Team \n The $URL's SSL(HTTPS) certificate will expire on $ssl_day-$ssl_month-$ssl_year " | mail -s "SLL cerficate expired for $URL" -a "From: from_mail_id@gmail.com" your_admin_1@gmail.com,your_admin_2@gmail.com >> /dev/null
+		fi	
+	fi
+fi
+done < "$FILE"
+sleep 10800
+done
