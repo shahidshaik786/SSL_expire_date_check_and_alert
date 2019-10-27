@@ -29,7 +29,7 @@ then
 		ex_days=1
 		before_expire=$(($day - $remind_days))
 		before_one=$(($day + $ex_days))
-		if [ $ssl_day -gt $before_expire -a $ssl_day -lt $before_one ]
+		if [ $ssl_day -gt $before_expire -o $ssl_day -lt $before_one ]
 		then
 			echo "Dear Admin Team \n The $URL's SSL(HTTPS) certificate will expire on $ssl_day-$ssl_month-$ssl_year " | mail -s "SLL cerficate expired for $URL" -a "From: from_mail_id@gmail.com" your_admin_1@gmail.com,your_admin_2@gmail.com >> /dev/null
 		fi	
